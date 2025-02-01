@@ -1,3 +1,4 @@
+import json
 import timeit
 from pathlib import Path
 
@@ -95,11 +96,7 @@ def boyer_moore_search(text: str, pattern: str) -> list[int]:
 
         if j < 0:
             found_indices.append(i)
-            i += (
-                shift_table.get(text[i + pattern_len - 1], pattern_len)
-                if i + pattern_len < text_len
-                else 1
-            )
+            i += shift_table.get(text[i + pattern_len - 1], pattern_len) if i + pattern_len < text_len else 1
         else:
             i += shift_table.get(text[i + pattern_len - 1], pattern_len)
 
@@ -139,8 +136,7 @@ def rabin_karp_search(text: str, pattern: str) -> list[int]:
                 found_indices.append(i)
         if i < text_length - pattern_length:
             text_hash = (
-                alphabet_size * (text_hash - ord(text[i]) * hash_multiplier)
-                + ord(text[i + pattern_length])
+                alphabet_size * (text_hash - ord(text[i]) * hash_multiplier) + ord(text[i + pattern_length])
             ) % prime_number
             if text_hash < 0:
                 text_hash = text_hash + prime_number
@@ -197,44 +193,20 @@ if __name__ == "__main__":
     }
 
     # Measure time for existing pattern
-    results["KMP"]["text1"]["existing"] = measure_time(
-        kmp_search, text1, existing_pattern
-    )
-    results["KMP"]["text2"]["existing"] = measure_time(
-        kmp_search, text2, existing_pattern
-    )
-    results["Boyer-Moore"]["text1"]["existing"] = measure_time(
-        boyer_moore_search, text1, existing_pattern
-    )
-    results["Boyer-Moore"]["text2"]["existing"] = measure_time(
-        boyer_moore_search, text2, existing_pattern
-    )
-    results["Rabin-Karp"]["text1"]["existing"] = measure_time(
-        rabin_karp_search, text1, existing_pattern
-    )
-    results["Rabin-Karp"]["text2"]["existing"] = measure_time(
-        rabin_karp_search, text2, existing_pattern
-    )
+    results["KMP"]["text1"]["existing"] = measure_time(kmp_search, text1, existing_pattern)
+    results["KMP"]["text2"]["existing"] = measure_time(kmp_search, text2, existing_pattern)
+    results["Boyer-Moore"]["text1"]["existing"] = measure_time(boyer_moore_search, text1, existing_pattern)
+    results["Boyer-Moore"]["text2"]["existing"] = measure_time(boyer_moore_search, text2, existing_pattern)
+    results["Rabin-Karp"]["text1"]["existing"] = measure_time(rabin_karp_search, text1, existing_pattern)
+    results["Rabin-Karp"]["text2"]["existing"] = measure_time(rabin_karp_search, text2, existing_pattern)
 
     # Measure time for non-existing pattern
-    results["KMP"]["text1"]["non_existing"] = measure_time(
-        kmp_search, text1, non_existing_pattern
-    )
-    results["KMP"]["text2"]["non_existing"] = measure_time(
-        kmp_search, text2, non_existing_pattern
-    )
-    results["Boyer-Moore"]["text1"]["non_existing"] = measure_time(
-        boyer_moore_search, text1, non_existing_pattern
-    )
-    results["Boyer-Moore"]["text2"]["non_existing"] = measure_time(
-        boyer_moore_search, text2, non_existing_pattern
-    )
-    results["Rabin-Karp"]["text1"]["non_existing"] = measure_time(
-        rabin_karp_search, text1, non_existing_pattern
-    )
-    results["Rabin-Karp"]["text2"]["non_existing"] = measure_time(
-        rabin_karp_search, text2, non_existing_pattern
-    )
+    results["KMP"]["text1"]["non_existing"] = measure_time(kmp_search, text1, non_existing_pattern)
+    results["KMP"]["text2"]["non_existing"] = measure_time(kmp_search, text2, non_existing_pattern)
+    results["Boyer-Moore"]["text1"]["non_existing"] = measure_time(boyer_moore_search, text1, non_existing_pattern)
+    results["Boyer-Moore"]["text2"]["non_existing"] = measure_time(boyer_moore_search, text2, non_existing_pattern)
+    results["Rabin-Karp"]["text1"]["non_existing"] = measure_time(rabin_karp_search, text1, non_existing_pattern)
+    results["Rabin-Karp"]["text2"]["non_existing"] = measure_time(rabin_karp_search, text2, non_existing_pattern)
 
     # Print results
     for algo, texts in results.items():
@@ -242,3 +214,5 @@ if __name__ == "__main__":
         for text_name, patterns in texts.items():
             for pattern_type, time in patterns.items():
                 print(f"  {text_name} - {pattern_type} pattern: {time:.6f} seconds")
+    with open("results.json", "w") as file:
+        json.dump(results, file, indent=4)
